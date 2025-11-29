@@ -37,7 +37,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 1; /* 恢复为1，按钮区域在SVG内部 */
         }
         
         .controls-container {
@@ -49,6 +49,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            pointer-events: none; /* 新增：让容器不拦截点击事件 */
         }
         
         .control-button {
@@ -66,6 +67,7 @@
             color: #333;
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
             overflow: hidden;
+            display: none; /* 隐藏原有的HTML按钮，因为现在使用SVG按钮 */
         }
         
         .control-button:hover {
@@ -159,6 +161,13 @@
             display: none;
         }
         
+        /* 确保状态显示等元素可交互 */
+        .status-display,
+        .recording-indicator,
+        .visualizer {
+            pointer-events: auto; /* 这些元素需要接收鼠标事件 */
+        }
+
         @keyframes pulse {
             0% {
                 transform: scale(0.9);
@@ -186,6 +195,24 @@
                     .fil1 {fill:#009933}
                     .fil0 {fill:#FF6600}
                     .fil2 {fill:#FFCC00}
+                    /* 新增按钮样式 */
+                    .button-area {
+                        fill: transparent;
+                        cursor: pointer;
+                        transition: fill 0.2s;
+                    }
+                    .button-area:hover {
+                        fill: rgba(255, 204, 0, 0.3);
+                    }
+                    .button-text {
+                        font-family: Arial, sans-serif;
+                        font-size: 24px;
+                        font-weight: bold;
+                        fill: #333;
+                        text-anchor: middle;
+                        pointer-events: none;
+                        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+                    }
                 </style>
             </defs>
             <g id="图层_x0020_1">
@@ -196,14 +223,26 @@
                     <polygon id="_211860952" class="fil2 str1" points="540.437,553.342 324.008,553.342 329.91,584.823 447.963,628.109 534.534,594.661 "/>
                     <polygon id="_211860760" class="fil2 str1" points="200.053,695.005 388.937,693.037 400.742,730.421 306.3,781.576 205.956,734.356 "/>
                 </g>
+                <!-- 新增按钮区域 -->
+                <!-- 录音按钮区域 -->
+                <rect class="button-area" x="170" y="400" width="250" height="80" id="svgRecordBtn"/>
+                <text class="button-text" x="295" y="445">开始/停止录音</text>
+                
+                <!-- 播放按钮区域 -->
+                <rect class="button-area" x="320" y="550" width="220" height="80" id="svgPlayBtn"/>
+                <text class="button-text" x="430" y="595">回放</text>
+                
+                <!-- 下载按钮区域 -->
+                <rect class="button-area" x="195" y="690" width="200" height="90" id="svgDownloadBtn"/>
+                <text class="button-text" x="295" y="740">下载</text>
             </g>
         </svg>
         
         <!-- 控制按钮 -->
         <div class="controls-container">
-            <button class="control-button" id="recordBtn">开始/停止录音</button>
+<!--             <button class="control-button" id="recordBtn">开始/停止录音</button>
             <button class="control-button" id="playBtn">回放</button>
-            <button class="control-button" id="downloadBtn">下载</button>
+            <button class="control-button" id="downloadBtn">下载</button> -->
             
             <!-- 状态显示 -->
             <div class="status-display">
@@ -236,9 +275,10 @@
         let animationId;
         
         // DOM元素
-        const recordBtn = document.getElementById('recordBtn');
-        const playBtn = document.getElementById('playBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
+        // 修改DOM元素选择器
+        const recordBtn = document.getElementById('svgRecordBtn');
+        const playBtn = document.getElementById('svgPlayBtn');
+        const downloadBtn = document.getElementById('svgDownloadBtn');
         const timer = document.getElementById('timer');
         const statusText = document.getElementById('statusText');
         const recordingIndicator = document.getElementById('recordingIndicator');
